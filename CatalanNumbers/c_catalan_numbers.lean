@@ -1,5 +1,5 @@
 import mathlib
-import «CatalanNumbers».prvo_trees
+import «CatalanNumbers».a_binary_trees
 
 open BigOperators
 open Finset
@@ -13,7 +13,3 @@ def catalan_number : ℕ → ℕ
 | (n+1) => ∑ i : Fin (n+1), catalan_number i * catalan_number (n-i)
 
 -- C(n) is the number of full binary trees with n nodes (excluding leaves)
-
-inductive full_binary_tree : Type
-| leaf : full_binary_tree
-| node : (T₁ T₂ : full_binary_tree) → full_binary_tree

@@ -1,10 +1,7 @@
 import mathlib
+import «CatalanNumbers».a_binary_trees
 
 /-- Showing the isomporphism between full binary trees and plane trees. -/
-
-inductive full_binary_tree : Type
-| leaf : full_binary_tree
-| node : (T₁ T₂ : full_binary_tree) → full_binary_tree
 
 inductive plane_tree : Type
 | node : List plane_tree → plane_tree
@@ -26,7 +23,10 @@ theorem list_plane_tree_of_plane_tree_of_list_plane_tree : ∀ (l : List plane_t
   done
 
 theorem plane_tree_of_list_plane_tree_of_plane_tree : ∀ (t : plane_tree), plane_tree_of_list_plane_tree (list_plane_tree_of_plane_tree t) = t := by
-  sorry
+  intro t
+  cases t
+  simp [plane_tree_of_list_plane_tree, list_plane_tree_of_plane_tree]
+  done
 
 
 -- Second show that List A is isomorphic to 1 + A x List A
@@ -49,15 +49,7 @@ def plane_tree_of_full_binary_tree : full_binary_tree → plane_tree
 | full_binary_tree.node T₁ T₂ => plane_tree.node [plane_tree_of_full_binary_tree T₁, plane_tree_of_full_binary_tree T₂]
 
 theorem full_binary_tree_of_plane_tree_of_full_binary_tree : ∀ (t : full_binary_tree), full_binary_tree_of_plane_tree (plane_tree_of_full_binary_tree t) = t := by
-  intro t
-  induction t
-  rfl
-  simp [full_binary_tree_of_plane_tree, plane_tree_of_full_binary_tree]
-  done
+  sorry
 
 theorem plane_tree_of_full_binary_tree_of_plane_tree : ∀ (t : plane_tree), plane_tree_of_full_binary_tree (full_binary_tree_of_plane_tree t) = t := by
-  intro t
-  induction t
-  rfl
-  simp [plane_tree_of_full_binary_tree, full_binary_tree_of_plane_tree]
-  done
+  sorry
