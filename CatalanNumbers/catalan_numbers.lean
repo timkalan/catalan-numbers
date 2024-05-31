@@ -4,6 +4,7 @@ open BigOperators
 open Finset
 open Finset.antidiagonal
 
+
 -- SMALL TASKS
 
 -- 1. Catalan number definition
@@ -40,35 +41,39 @@ inductive ballot_sequence : ℕ → Type
 -- LARGER TASKS
 
 
--- 1.
+-- 1. Fin-sum bijection
+def k : Fin n → ℕ := Fin.val
 
+-- def fin_of_sum :
 
 -- 3. full binary tree ≅ Fin catalan_number n
 
 
 -- 4. list plane tree ≅ plane tree
+-- Define both directions as functions and prove that they are inverses of each other
+-- One direction is simply plane_tree.node, the other is given by:
 def list_plane_tree_of_plane_tree : plane_tree → List plane_tree
 | (plane_tree.node l) => l
 
-def plane_tree_of_list_plane_tree : List plane_tree → plane_tree
-| l => plane_tree.node l
-
-theorem list_plane_tree_of_plane_tree_of_list_plane_tree : ∀ (l : List plane_tree), list_plane_tree_of_plane_tree (plane_tree_of_list_plane_tree l) = l := by
+theorem list_plane_tree_of_plane_tree_of_list_plane_tree : ∀ (l : List plane_tree), list_plane_tree_of_plane_tree (plane_tree.node l) = l := by
   intro l
-  induction l
-  rfl
-  simp [plane_tree_of_list_plane_tree, list_plane_tree_of_plane_tree]
-  done
+  cases l with
+  | nil => rfl
+  | cons hd tl =>
+    simp [plane_tree.node, list_plane_tree_of_plane_tree]
+    done
+  -- or simply:
   -- exact fun l ↦ rfl
 
-theorem plane_tree_of_list_plane_tree_of_plane_tree : ∀ (t : plane_tree), plane_tree_of_list_plane_tree (list_plane_tree_of_plane_tree t) = t := by
+theorem plane_tree_of_list_plane_tree_of_plane_tree : ∀ (t : plane_tree), plane_tree.node (list_plane_tree_of_plane_tree t) = t := by
   intro t
-  cases t
-  simp [plane_tree_of_list_plane_tree, list_plane_tree_of_plane_tree]
+  cases t with
+  | node l => simp [plane_tree.node, list_plane_tree_of_plane_tree]
   done
 
 
 -- 5. Rotating isomorphism between full binary trees and plane trees
+-- Define both directions as functions and prove that they are inverses of each other
 def full_binary_tree_of_plane_tree : plane_tree → full_binary_tree
 | plane_tree.node [] => full_binary_tree.leaf
 | plane_tree.node (T :: l) => full_binary_tree.node (full_binary_tree_of_plane_tree T) (full_binary_tree_of_plane_tree (plane_tree.node l))
@@ -79,14 +84,44 @@ def plane_tree_of_full_binary_tree : full_binary_tree → plane_tree
 
 theorem full_binary_tree_of_plane_tree_of_full_binary_tree : ∀ (t : full_binary_tree), full_binary_tree_of_plane_tree (plane_tree_of_full_binary_tree t) = t := by
   intro t
-  induction t
-  rfl
-  sorry
+  induction t with
+  | leaf => rfl
+  | node T₁ T₂ ih₁ ih₂ =>
+    simp [full_binary_tree_of_plane_tree, plane_tree_of_full_binary_tree]
+    rw [ih₁]
+    simp  -- Remove T₁ = T₁ from the goal
+    rw [plane_tree_of_list_plane_tree_of_plane_tree]
+    rw [ih₂]
+    done
+
+-- lemma aux : ∀ (l : List plane_tree), plane_tree_of_full_binary_tree (full_binary_tree_of_plane_tree (plane_tree.node l)) = plane_tree.node l := by
+--   intro l
+--   induction l with
+--   | nil => rfl
+--   | cons hd tl ih =>
+--     simp [full_binary_tree_of_plane_tree]
+--     simp [plane_tree_of_full_binary_tree]
+--     rw [ih]
+--     rw [list_plane_tree_of_plane_tree_of_list_plane_tree]
+--     simp
+--     sorry
 
 theorem plane_tree_of_full_binary_tree_of_plane_tree : ∀ (t : plane_tree), plane_tree_of_full_binary_tree (full_binary_tree_of_plane_tree t) = t := by
-  intro t
-  sorry
-
+  rintro ⟨⟨ ⟩ | ⟨T₁, l⟩⟩
+  rfl
+  simp [full_binary_tree_of_plane_tree, plane_tree_of_full_binary_tree]
+  rw [plane_tree_of_full_binary_tree_of_plane_tree]
+  simp
+  induction l with
+  | nil => rfl
+  | cons hd tl ih =>
+    simp [full_binary_tree_of_plane_tree]
+    simp [plane_tree_of_full_binary_tree]
+    rw [ih]
+    rw [list_plane_tree_of_plane_tree_of_list_plane_tree]
+    simp
+    rw [plane_tree_of_full_binary_tree_of_plane_tree hd]
+    done
 
 
 -- 6. 2n choose n is divisible by n+1
