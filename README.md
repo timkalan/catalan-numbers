@@ -11,6 +11,8 @@ Clone the project, `cd` into it and configure `mathlib` by running the command:
 ```bash
 lake exe cache get
 ```
+In case of any issues, try first running `lake clean`. If issues persist, deleting 
+the `.lake/` directory and running `lake exe cache get` again should solve the problem.
 
 ## Troubleshooting
 - For mathlib related issues, look at [this](https://github.com/leanprover-community/mathlib4/wiki/Using-mathlib4-as-a-dependency)

@@ -111,17 +111,73 @@ theorem plane_tree_of_full_binary_tree_of_plane_tree : ∀ (t : plane_tree), pla
   rfl
   simp [full_binary_tree_of_plane_tree, plane_tree_of_full_binary_tree]
   rw [plane_tree_of_full_binary_tree_of_plane_tree]
+  rw [plane_tree_of_full_binary_tree_of_plane_tree]
   simp
-  induction l with
-  | nil => rfl
-  | cons hd tl ih =>
-    simp [full_binary_tree_of_plane_tree]
-    simp [plane_tree_of_full_binary_tree]
-    rw [ih]
-    rw [list_plane_tree_of_plane_tree_of_list_plane_tree]
-    simp
-    rw [plane_tree_of_full_binary_tree_of_plane_tree hd]
-    done
+  rw [list_plane_tree_of_plane_tree_of_list_plane_tree]
+
+
+
+  -- intro t
+  -- -- rcases h : plane_tree_of_full_binary_tree (full_binary_tree_of_plane_tree t) with ⟨⟨ ⟩ | ⟨T₁, l⟩⟩
+  -- rcases h : t with ⟨⟨ ⟩ | ⟨T₁, l⟩⟩
+  -- rfl
+  -- simp [full_binary_tree_of_plane_tree, plane_tree_of_full_binary_tree]
+  -- induction l with
+  -- | nil =>
+  --   simp [full_binary_tree_of_plane_tree]
+  --   simp [plane_tree_of_full_binary_tree]
+  --   rw [list_plane_tree_of_plane_tree_of_list_plane_tree]
+  --   simp
+  --   rw [plane_tree_of_full_binary_tree_of_plane_tree]
+  --   done
+  -- | cons hd tl ih =>
+  --   simp [full_binary_tree_of_plane_tree]
+  --   simp [plane_tree_of_full_binary_tree]
+  --   rw [list_plane_tree_of_plane_tree_of_list_plane_tree]
+  --   simp
+  --   rw [plane_tree_of_full_binary_tree_of_plane_tree T₁]
+  --   simp
+  --   sorry
+
+
+
+
+  -- intro T
+  -- cases T with
+  -- | node l =>
+  --   induction l with
+  --   | nil => rfl
+  --   | cons hd tl ih =>
+  --     simp [full_binary_tree_of_plane_tree]
+  --     simp [plane_tree_of_full_binary_tree]
+  --     rw [ih]
+  --     rw [list_plane_tree_of_plane_tree_of_list_plane_tree]
+  --     simp
+  --     rw [plane_tree_of_full_binary_tree_of_plane_tree hd]
+  --     done
+
+
+
+
+
+
+
+
+  -- rintro ⟨⟨ ⟩ | ⟨T₁, l⟩⟩
+  -- rfl
+  -- simp [full_binary_tree_of_plane_tree, plane_tree_of_full_binary_tree]
+  -- rw [plane_tree_of_full_binary_tree_of_plane_tree]
+  -- simp
+  -- induction l with
+  -- | nil => rfl
+  -- | cons hd tl ih =>
+  --   simp [full_binary_tree_of_plane_tree]
+  --   simp [plane_tree_of_full_binary_tree]
+  --   rw [ih]
+  --   rw [list_plane_tree_of_plane_tree_of_list_plane_tree]
+  --   simp
+  --   rw [plane_tree_of_full_binary_tree_of_plane_tree hd]
+  --   done
 
 
 -- 6. 2n choose n is divisible by n+1
