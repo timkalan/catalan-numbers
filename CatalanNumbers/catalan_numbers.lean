@@ -43,6 +43,7 @@ inductive ballot_sequence : ℕ → Type
 def list_plane_tree_of_plane_tree : plane_tree → List plane_tree
 | (plane_tree.node l) => l
 
+-- Proof that the transformations are inverses of each other
 theorem list_plane_tree_of_plane_tree_of_list_plane_tree : ∀ (l : List plane_tree), list_plane_tree_of_plane_tree (plane_tree.node l) = l := by
   intro l
   cases l with
@@ -61,14 +62,19 @@ theorem plane_tree_of_list_plane_tree_of_plane_tree : ∀ (t : plane_tree), plan
 
 -- 5. Rotating isomorphism between full binary trees and plane trees
 -- Define both directions as functions and prove that they are inverses of each other
+
+-- Definition of transformation from plane tree to full binary tree
 def full_binary_tree_of_plane_tree : plane_tree → full_binary_tree
 | plane_tree.node [] => full_binary_tree.leaf
 | plane_tree.node (T :: l) => full_binary_tree.node (full_binary_tree_of_plane_tree T) (full_binary_tree_of_plane_tree (plane_tree.node l))
 
+
+-- Definition of transformation from full binary tree to plane tree
 def plane_tree_of_full_binary_tree : full_binary_tree → plane_tree
 | full_binary_tree.leaf => plane_tree.node []
 | full_binary_tree.node T₁ T₂ => plane_tree.node (plane_tree_of_full_binary_tree T₁ :: list_plane_tree_of_plane_tree (plane_tree_of_full_binary_tree T₂))
 
+-- Proof that the transformations are inverses of each other
 theorem full_binary_tree_of_plane_tree_of_full_binary_tree : ∀ (t : full_binary_tree), full_binary_tree_of_plane_tree (plane_tree_of_full_binary_tree t) = t := by
   intro t
   induction t with
@@ -77,26 +83,28 @@ theorem full_binary_tree_of_plane_tree_of_full_binary_tree : ∀ (t : full_binar
     simp [full_binary_tree_of_plane_tree, plane_tree_of_full_binary_tree]
     rw [ih₁]
     simp  -- Remove T₁ = T₁ from the goal
-    rw [plane_tree_of_list_plane_tree_of_plane_tree]
+    rw [plane_tree_of_list_plane_tree_of_plane_tree] -- use of the isomorphism list plane tree ≅ plane tree
     rw [ih₂]
     done
 
-
 theorem plane_tree_of_full_binary_tree_of_plane_tree : ∀ (t : plane_tree), plane_tree_of_full_binary_tree (full_binary_tree_of_plane_tree t) = t := by
-  rintro ⟨⟨ ⟩ | ⟨T₁, l⟩⟩
+  rintro ⟨⟨ ⟩ | ⟨T₁, l⟩⟩ -- here we have to use rintro because induction does not work
+  -- case where t = plane_tree.node []
   rfl
+  -- case where t = plane_tree.node (T₁ :: l)
   simp [full_binary_tree_of_plane_tree, plane_tree_of_full_binary_tree]
-  rw [plane_tree_of_full_binary_tree_of_plane_tree]
+  rw [plane_tree_of_full_binary_tree_of_plane_tree] -- to use the induction hypothesis we call the theorem we are proving
   rw [plane_tree_of_full_binary_tree_of_plane_tree]
   simp
-  rw [list_plane_tree_of_plane_tree_of_list_plane_tree]
+  rw [list_plane_tree_of_plane_tree_of_list_plane_tree] -- use of the isomorphism list plane tree ≅ plane tree
   done
 
 
 -- 6. 2n choose n is divisible by n+1
 -- idea: https://math.stackexchange.com/questions/189346/n1-is-a-divisor-of-binom2n-n
 
-theorem rewrite_n_plus_1 : ∀ (n : ℕ), n + 1 = 2 * (n + 1) - (n + 1) := by --helper function for transforming (n+1)! = (2 * (n + 1) - (n + 1))!
+ --helper function for transforming (n+1)! = (2 * (n + 1) - (n + 1))!
+theorem rewrite_n_plus_1 : ∀ (n : ℕ), n + 1 = 2 * (n + 1) - (n + 1) := by
   intro n
   rw [← Nat.add_left_inj]
   rw [Nat.sub_add_cancel]
@@ -104,7 +112,8 @@ theorem rewrite_n_plus_1 : ∀ (n : ℕ), n + 1 = 2 * (n + 1) - (n + 1) := by --
   ring
   linarith
 
-theorem rewrite_n : ∀ (n : ℕ), n  = 2 * (n + 1) - (n + 1 + 1) := by --helper function for transforming n! = (2 * (n + 1) - (n + 1 + 1))!
+--helper function for transforming n! = (2 * (n + 1) - (n + 1 + 1))!
+theorem rewrite_n : ∀ (n : ℕ), n  = 2 * (n + 1) - (n + 1 + 1) := by
   intro n
   rw [← Nat.add_left_inj]
   rw [Nat.sub_add_cancel]
@@ -121,15 +130,14 @@ theorem from_2n_choose_n_equality (n : ℕ) : Nat.choose (2*n) n = (n+1) * (Nat.
     rw [one_mul]
     rw [Nat.choose_one_right]
   | succ n => -- case where n = n + 1
-  -- goal: (2 * (n + 1)).choose (n + 1) =
-  --     = (n + 1 + 1) * ((2 * (n + 1)).choose (n + 1) - (2 * (n + 1)).choose (n + 1 + 1))
-  --
+  -- goal: (2 * (n + 1)).choose (n + 1) = (n + 1 + 1) * ((2 * (n + 1)).choose (n + 1) - (2 * (n + 1)).choose (n + 1 + 1))
   rw [Nat.mul_sub_left_distrib]
   rw [Nat.right_distrib]
   rw [Nat.one_mul]
   nth_rw 3 [Nat.add_comm]
   apply Eq.symm
-  -- we add Nat.choose (2*n) (n+1) to both sides so Nat.choose (2*n) (n+1) - Nat.choose (2*n) (n+1) cancels out
+  -- We add Nat.choose (2*n) (n+1) to both sides (we just put a parameter which lean figures out what we want it to be)
+  -- so (- Nat.choose (2*n) (n+1) + Nat.choose (2*n) (n+1)) cancels out
   -- with tactic Nat.sub_add_cancel (m ≤ n → n - m + m = n) because of this we later have to prove m ≤ n
   rw [← Nat.add_left_inj]
   rw [Nat.sub_add_cancel]
@@ -143,8 +151,7 @@ theorem from_2n_choose_n_equality (n : ℕ) : Nat.choose (2*n) n = (n+1) * (Nat.
     exact Nat.factorial_pos n
   -- multiply both sides by (n+1)! (n)!
   apply Nat.eq_of_mul_eq_mul_right h
-
-   -- now we want to remove the choose from both sides with tactic Nat.choose_mul_factorial_mul_factorial
+   -- Now we want to remove the choose from both sides with tactic Nat.choose_mul_factorial_mul_factorial
    -- To do this we have to prepare the equation to form n.choose k * k.factorial * (n - k).factorial = n.factorial
    -- The hard part here is to get (n - k).factorial. For this i defined helper functions rewrite_n_plus_1 and rewrite_n
    -- which help to get the correct form of the factorials
@@ -173,9 +180,9 @@ theorem from_2n_choose_n_equality (n : ℕ) : Nat.choose (2*n) n = (n+1) * (Nat.
   rw [← Nat.add_assoc]
   nth_rw 1 [Nat.add_comm 1 n]
   apply Nat.mul_le_mul_left
-  -- here h is the part where we prove that the inequality holds when we multiply with (n+2)! and (n+1)!
-  -- before the part inside h was just proving positivity but here it is the actual proof of the inequality
-  have h : (2 * (n + 1)).choose (n + 1 + 1) * (Nat.factorial (n+1+1) * Nat.factorial (n+1)) ≤ (2 * (n + 1)).choose (n + 1) *  (Nat.factorial (n+1+1) * Nat.factorial (n+1)) := by
+  -- In this part of the proof h is the part where we prove that the inequality holds when we multiply with (n+2)! and (n+1)!
+  -- Before when proving the equality the part inside h was just proving positivity but here it is the actual proof of the inequality
+  have h : (Nat.choose (2 * (n + 1)) (n + 1 + 1)) * (Nat.factorial (n+1+1) * Nat.factorial (n+1)) ≤ (Nat.choose (2 * (n + 1)) (n + 1)) *  (Nat.factorial (n+1+1) * Nat.factorial (n+1)) := by
     -- removing choose from left side of ≤
     nth_rw 2 [Nat.factorial_succ]
     nth_rw 1 [← Nat.mul_assoc]
